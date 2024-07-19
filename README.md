@@ -11,5 +11,6 @@ Backend
     - The Co-Doctor AI reponses are process in this file and sent to the frontend.
 - The database models are defined in models.py.
 - The database connection and session management is defined in the database.py file.
+(For now the run.py in the main directory should be used to run the server, the run.py in the backend directory is not used)
 
 AI
