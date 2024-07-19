@@ -22,6 +22,8 @@ async def startup():
 async def shutdown():
     await database.disconnect()
 
+app.add_event_handler("startup", startup)
+app.add_event_handler("shutdown", shutdown)
 
 @app.websocket("/ws/{conversation_id}")
 @timing_decorator
@@ -31,6 +33,6 @@ async def websocket_endpoint(websocket: WebSocket, conversation_id: int, db: Ses
     await process_websocket_message(websocket, conversation_id, db)
 
 
-@app.get("/", response_model=Message)
+@app.get("/")
 async def get():
     return {"message": "Hello World"}
