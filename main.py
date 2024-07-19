@@ -1,11 +1,11 @@
-from fastapi import WebSocket, Depends
+from fastapi import HTTPException, WebSocket, Depends
 from sqlalchemy.orm import Session
-from database import SessionLocal
+from database import SessionLocal, Conversation
 from setup import logger, app, database
 from database_utils import init_db
 from utility import timing_decorator
-from websockets_utils import process_websocket_message, Message
-
+from websockets_utils import process_websocket_message, ConversationCreate
+from sqlalchemy.exc import SQLAlchemyError
 
 # Dependency to get the DB session
 def get_db():
@@ -31,6 +31,19 @@ async def websocket_endpoint(websocket: WebSocket, conversation_id: int, db: Ses
     logger.info(f"WebSocket connection established for conversation {conversation_id}")
     await websocket.accept()
     await process_websocket_message(websocket, conversation_id, db)
+
+@app.post("/conversations/", response_model=ConversationCreate)
+async def create_conversation(conversation_data: ConversationCreate, db: Session = Depends(get_db)):
+    new_conversation = Conversation(title=conversation_data.title)
+    db.add(new_conversation)
+    try:
+        db.commit()
+        db.refresh(new_conversation)
+        return new_conversation
+    except SQLAlchemyError as e:
+        db.rollback()
+        logger.error(f"Error creating conversation: {e}")
+        raise HTTPException(status_code=500, detail="Error creating conversation")
 
 
 @app.get("/")

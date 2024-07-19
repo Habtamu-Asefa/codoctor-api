@@ -7,7 +7,7 @@ from setup import DATABASE_URL, Base
 class Conversation(Base):
     __tablename__ = "conversations"
     id = Column(Integer, primary_key=True, index=True)
-    messages = Column(String, index=True)
+    title = Column(String, index=True)
 
 class Message(Base):
     __tablename__ = "messages"

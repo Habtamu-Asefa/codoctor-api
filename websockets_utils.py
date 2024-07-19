@@ -13,6 +13,11 @@ from sqlalchemy.exc import SQLAlchemyError
 class Message(BaseModel):
     message: str
 
+class ConversationCreate(BaseModel):
+    title: str
+    id: int = None
+
+
 class WebSocketMessage(BaseModel):
     conversation_id: str
     data: str
