@@ -1,18 +1,18 @@
 # websocket_utils.py
 from fastapi import WebSocket
 from sqlalchemy.orm import Session
-from database import Message as DBMessage
+from models import Message as DBMessage
 from datetime import datetime
 from utility import logger
 from fastapi import WebSocket, WebSocketDisconnect, Depends
 from pydantic import BaseModel, ValidationError
 from sqlalchemy.exc import SQLAlchemyError
-from codoctor_ai import CoDoctor
-
+from AI.codoctor_ai import CoDoctor
 
 
 doctor = CoDoctor()
 session_id = "abc1"
+
 
 # Define Pydantic models
 class Message(BaseModel):

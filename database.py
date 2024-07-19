@@ -14,6 +14,7 @@ class Message(Base):
     id = Column(Integer, primary_key=True, index=True)
     conversation_id = Column(Integer, ForeignKey("conversations.id"))
     data = Column(String)
+    is_ai = Column(String)
     timestamp = Column(DateTime(timezone=True), server_default=func.now())
 
 engine = create_engine(DATABASE_URL)
