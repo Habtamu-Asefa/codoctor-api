@@ -1,5 +1,5 @@
 import uvicorn
-from .setup import app
+from setup import app
 
 
 if __name__ == "__main__":

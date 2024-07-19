@@ -3,7 +3,7 @@ from fastapi import WebSocket
 from sqlalchemy.orm import Session
 from database import Message as DBMessage
 from datetime import datetime
-from .utility import logger
+from utility import logger
 from fastapi import WebSocket, WebSocketDisconnect, Depends
 from pydantic import BaseModel, ValidationError
 from sqlalchemy.exc import SQLAlchemyError

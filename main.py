@@ -1,10 +1,10 @@
 from fastapi import WebSocket, Depends
 from sqlalchemy.orm import Session
 from database import SessionLocal
-from .setup import logger, app, database
-from .database_utils import init_db
-from .utility import timing_decorator
-from .websockets_utils import process_websocket_message, Message
+from setup import logger, app, database
+from database_utils import init_db
+from utility import timing_decorator
+from websockets_utils import process_websocket_message, Message
 
 
 # Dependency to get the DB session
