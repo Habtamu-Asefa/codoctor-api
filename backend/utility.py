@@ -1,6 +1,7 @@
 import time
 import functools
 from setup import logger
+from models import SessionLocal
 
 def timing_decorator(func):
     @functools.wraps(func)
@@ -11,3 +12,4 @@ def timing_decorator(func):
         logger.info(f"Function {func.__name__} executed in {end_time - start_time:.4f} seconds", extra={"performance": True, "function_name": func.__name__, "execution_time": end_time - start_time})
         return result
     return wrapper
+

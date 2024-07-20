@@ -1,31 +1,30 @@
-from fastapi import HTTPException, WebSocket, Depends
+from datetime import timedelta
+from fastapi import HTTPException, Request, WebSocket, Depends, status
+from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
-from models import SessionLocal, Conversation
+from backend.auth_utils import verify_password
+from backend.auth import create_access_token, get_current_user, get_user_by_username
+from models import SessionLocal, Conversation, User
 from setup import logger, app, database
-from database import init_db
+from backend.database import init_db, get_db
 from utility import timing_decorator
 from websockets_utils import process_websocket_message, ConversationCreate
+from backend.auth_utils import Token
 from sqlalchemy.exc import SQLAlchemyError
 
-
-
-# Dependency to get the DB session
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
 
 async def startup():
     init_db()
     await database.connect()
 
+
 async def shutdown():
     await database.disconnect()
 
+
 app.add_event_handler("startup", startup)
 app.add_event_handler("shutdown", shutdown)
+
 
 @app.websocket("/ws/{conversation_id}")
 @timing_decorator
@@ -37,14 +36,15 @@ async def websocket_endpoint(websocket: WebSocket, conversation_id: int, db: Ses
     await websocket.accept()
     await process_websocket_message(websocket, conversation_id, db)
 
+    
 @app.post("/conversations/", response_model=ConversationCreate)
-async def create_conversation(conversation_data: ConversationCreate, db: Session = Depends(get_db)):
+async def create_conversation(conversation_data: ConversationCreate, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     """
     Create a new conversation.
 
     - **title**: each conversation must have a title
     """
-    new_conversation = Conversation(title=conversation_data.title, owner_id=1)
+    new_conversation = Conversation(title=conversation_data.title, owner_id=current_user.id)
     db.add(new_conversation)
     try:
         db.commit()
@@ -60,3 +60,44 @@ async def create_conversation(conversation_data: ConversationCreate, db: Session
 async def get():
     return {"message": "Hello World"}
 
+
+# @app.post("/token", response_model=Token)
+# async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(SessionLocal)):
+#     user = get_user_by_username(db, form_data.username)
+#     if user is None or not verify_password(form_data.password, user.hashed_password):
+#         raise HTTPException(
+#             status_code=status.HTTP_401_UNAUTHORIZED,
+#             detail="Incorrect username or password",
+#             headers={"WWW-Authenticate": "Bearer"},
+#         )
+#     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+#     access_token = create_access_token(
+#         data={"sub": user.username}, expires_delta=access_token_expires
+#     )
+#     return {"access_token": access_token, "token_type": "bearer"}
+
+
+@app.post("/token", response_model=Token)
+async def login_for_access_token(request: Request, db: Session = Depends(get_db)):
+    print("Login for access token")
+    try:
+        json_data = await request.json()
+        username = json_data["username"]
+        password = json_data["password"]
+    except Exception:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail="Invalid input data",
+        )
+
+    user = get_user_by_username(db, username)
+    if user is None or not verify_password(password, user.hashed_password):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Incorrect username or password",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+
+    access_token = create_access_token(
+        data={"sub": user.username})
+    return {"access_token": access_token, "token_type": "bearer"}

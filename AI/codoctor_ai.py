@@ -4,7 +4,7 @@ import os
 from dotenv import load_dotenv
 
 # Set your OpenAI API key as an environment variable
-os.environ["OPENAI_API_KEY"] = "sk-proj-r8Wz0Ujr3YEIY2t300q5T3BlbkFJSZMXtGZNbMwBGkH7BZnk"
+os.environ["OPENAI_API_KEY"] = os.getenv("OPENAI_API_KEY")
 from langchain_openai import ChatOpenAI
 from langchain_core.messages import HumanMessage, trim_messages
 from langchain_core.chat_history import InMemoryChatMessageHistory
