@@ -7,11 +7,7 @@ session_id = "abc1"
 
 # Step 1: Login and get the JWT token
 def login():
-<<<<<<< HEAD
     url = "http://localhost:8000/auth/token"
-=======
-    url = "http://localhost:8000/token"
->>>>>>> 67cbfa0fd8fedd4810ab474eab6715f0627df220
     data = {
         "username": "default_user",
         "password": "password"
@@ -38,6 +34,7 @@ def create_conversation(token):
     else:
         print("Failed to create conversation:", response_data)
         return None
+    
 
 # Step 3: Send a message using WebSocket
 async def send_message(conversation_id, message, token):
@@ -58,11 +55,7 @@ def main():
         conversation_id = create_conversation(token)
         if conversation_id:
             print(f"Created conversation with ID: {conversation_id}")
-<<<<<<< HEAD
             message = "What does an oncologist do ."
-=======
-            message = "Hello, tell me about common cold."
->>>>>>> 67cbfa0fd8fedd4810ab474eab6715f0627df220
             asyncio.run(send_message(conversation_id, message, token))
         else:
             print("Failed to create conversation")
@@ -71,3 +64,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+

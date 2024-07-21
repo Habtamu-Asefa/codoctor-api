@@ -1,7 +1,6 @@
 import time
 import functools
 from setup import logger
-from models import SessionLocal
 
 def timing_decorator(func):
     @functools.wraps(func)
