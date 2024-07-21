@@ -8,7 +8,7 @@ from backend.models.setup import database
 from backend.models.database import init_db, get_db
 from utility import timing_decorator
 from websockets_utils import process_websocket_message, ConversationCreate
-from backend.auth_utils import Token
+from backend.auth.auth_utils import Token
 from sqlalchemy.exc import SQLAlchemyError
 
 
@@ -29,7 +29,7 @@ app.add_event_handler("shutdown", shutdown)
 @timing_decorator
 async def websocket_endpoint(websocket: WebSocket, conversation_id: int, db: Session = Depends(get_db)):
     """
-    WebSocket endpoint for a conversation.
+    WebSocket endpoint for a conversation with the chosen conversation_id.
     """
     logger.info(f"WebSocket connection established for conversation {conversation_id}")
     await websocket.accept()
@@ -37,13 +37,13 @@ async def websocket_endpoint(websocket: WebSocket, conversation_id: int, db: Ses
 
     
 @app.post("/conversations/", response_model=ConversationCreate)
-async def create_conversation(conversation_data: ConversationCreate, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+async def create_conversation(conversation_data: ConversationCreate, db: Session = Depends(get_db)):
     """
     Create a new conversation.
 
     - **title**: each conversation must have a title
     """
-    new_conversation = Conversation(title=conversation_data.title, owner_id=current_user.id)
+    new_conversation = Conversation(title=conversation_data.title, owner_id=1)
     db.add(new_conversation)
     try:
         db.commit()

@@ -22,10 +22,10 @@ def login():
         return None
 
 # Step 2: Create a new conversation
-def create_conversation(token):
+def create_conversation():
     url = "http://localhost:8000/conversations/"
     data = {"title": "My New Conversation"}
-    headers = {"Authorization": f"Bearer {token}"}
+    headers = {"Authorization": f"Bearer"}
     response = requests.post(url, json=data, headers=headers)
     response_data = response.json()
     if response.status_code == 200:
@@ -37,9 +37,9 @@ def create_conversation(token):
     
 
 # Step 3: Send a message using WebSocket
-async def send_message(conversation_id, message, token):
+async def send_message(conversation_id, message):
     uri = f"ws://localhost:8000/ws/{conversation_id}"
-    async with websockets.connect(uri, extra_headers={"Authorization": f"Bearer {token}"}) as websocket:
+    async with websockets.connect(uri, extra_headers={"Authorization": f"Bearer "}) as websocket:
         json_message = json.dumps({
             "conversation_id": str(conversation_id),
             "data": message
@@ -49,19 +49,17 @@ async def send_message(conversation_id, message, token):
         print(f"Response from server: {response}")
 
 def main():
-    token = login()
-    if token:
-        print(f"Obtained JWT token: {token}")
-        conversation_id = create_conversation(token)
-        if conversation_id:
-            print(f"Created conversation with ID: {conversation_id}")
-            message = "What does an oncologist do ."
-            asyncio.run(send_message(conversation_id, message, token))
-        else:
-            print("Failed to create conversation")
+    # token = login()
+    # if token:
+    #     print(f"Obtained JWT token: {token}")
+    conversation_id = create_conversation()
+    if conversation_id:
+        print(f"Created conversation with ID: {conversation_id}")
+        message = "What does an oncologist do ."
+        asyncio.run(send_message(conversation_id, message))
     else:
-        print("Failed to obtain JWT token")
+        print("Failed to create conversation")
+
 
 if __name__ == "__main__":
     main()
-

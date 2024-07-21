@@ -33,6 +33,10 @@ class WebSocketMessage(BaseModel):
 
 
 async def process_websocket_message(websocket: WebSocket, conversation_id: int, db: Session):
+    """
+    Process a message received on a WebSocket connection and have an agent send a response.
+    
+    """
     try:
         while True:
             try:

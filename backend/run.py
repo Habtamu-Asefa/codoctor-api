@@ -1,6 +1,4 @@
 import uvicorn
-# from setup import app
-
 import sys
 from pathlib import Path
 
