@@ -1,17 +1,21 @@
 # websocket_utils.py
 from fastapi import WebSocket
 from sqlalchemy.orm import Session
-from models import Message as DBMessage
+from backend.models.schema import Message as DBMessage
 from datetime import datetime
 from utility import logger
 from fastapi import WebSocket, WebSocketDisconnect, Depends
 from pydantic import BaseModel, ValidationError
 from sqlalchemy.exc import SQLAlchemyError
 from AI.codoctor_ai import CoDoctor
+from AI.agent import Oncology
 
+
+onco = Oncology()
 
 doctor = CoDoctor()
 session_id = "abc1"
+
 
 
 # Define Pydantic models
@@ -41,8 +45,9 @@ async def process_websocket_message(websocket: WebSocket, conversation_id: int, 
                 db.commit()
                 db.refresh(db_message)
 
-                ai_response = doctor.invoke(data.data, session_id)
-                db_ai_message = DBMessage(conversation_id=conversation_id, data=ai_response, is_ai=True, timestamp=datetime.now())
+                # ai_response = doctor.invoke(data.data, session_id)
+                ai_response = onco.create_rag_chain().invoke(data.data)
+                db_ai_message = DBMessage(conversation_id=conversation_id, data=str(ai_response), is_ai=True, timestamp=datetime.now())
                 db.add(db_ai_message)
                 db.commit()
                 db.refresh(db_ai_message)

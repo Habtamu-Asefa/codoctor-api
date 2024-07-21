@@ -10,9 +10,16 @@ Backend
 - The API routes are defined in the main.py file.
 - The main websockets helper codes are defined in the websocket_utils.py file.
     - The Co-Doctor AI responses are processed in this file and sent to the front end.
-- The database models are defined in models.py.
-- The database connection and session management are defined in the database.py file.
-(For now, the run.py in the main directory should be used to run the server, the run.py in the backend directory is not used)
+- The database models are defined in models module.
+    - The schema for the database models are defined in the schemas file
+    - The database connection and some helper functions is defined in the database file
+    - The database setup are defined in setup.py file
+- The authentication and authorization are defined in the auth module.
+    - The authentication and authorization functions are defined in the auth.py file.
+    - The token generation and verification functions are defined in the auth_utils file.
+    - The authentication routes are defined in the auth_routes file.
+
+
 
 AI
 - Run test_ai.py to test the ai on terminal

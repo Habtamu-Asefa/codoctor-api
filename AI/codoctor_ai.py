@@ -4,7 +4,7 @@ import os
 from dotenv import load_dotenv
 
 # Set your OpenAI API key as an environment variable
-os.environ["OPENAI_API_KEY"] = "sk-proj-r8Wz0Ujr3YEIY2t300q5T3BlbkFJSZMXtGZNbMwBGkH7BZnk"
+os.environ["OPENAI_API_KEY"] = os.getenv("OPENAI_API_KEY")
 from langchain_openai import ChatOpenAI
 from langchain_core.messages import HumanMessage, trim_messages
 from langchain_core.chat_history import InMemoryChatMessageHistory
@@ -12,6 +12,11 @@ from langchain_core.runnables.history import RunnableWithMessageHistory
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_core.runnables import RunnablePassthrough
 from operator import itemgetter
+
+from AI.agent import Oncology
+onco = Oncology()
+response = onco.invoke('What is (are) Chronic Myelomonocytic Leukemia ?')
+
 
 # Load environment variables from the .env file
 load_dotenv()
